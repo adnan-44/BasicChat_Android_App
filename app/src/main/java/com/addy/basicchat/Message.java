@@ -4,6 +4,7 @@ public class Message {
 
     // Model class for Messages
     private String message, senderUid, time;
+    private Boolean messageSeen;
 
     // getter and setters
     public void setMessage(String message){
@@ -28,5 +29,13 @@ public class Message {
 
     public String getTime(){
         return time;
+    }
+
+    public void setMessageSeen(Boolean messageSeen){
+        this.messageSeen = messageSeen;
+    }
+
+    public Boolean getMessageSeen(){
+        return messageSeen;
     }
 }

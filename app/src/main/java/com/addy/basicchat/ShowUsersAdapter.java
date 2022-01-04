@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -57,7 +58,14 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // set the user info in userInformation model and update textview
-                holder.username.setText(snapshot.getValue(UserInformation.class).getFull_name());
+                UserInformation userInfo = snapshot.getValue(UserInformation.class);
+                holder.username.setText(userInfo.getFull_name());
+
+                // call getAndSetLastMessage() method to set last message from chats(database)
+                // Pass the lastSentMessage reference (to set the text), also pass user full_name
+                getAndSetLastMessage(position, holder.lastSentMessage,
+                        userInfo.getFull_name(), holder.lastSendMessageTime,
+                        holder.lastSentMessageStatus);
             }
 
             @Override
@@ -85,13 +93,51 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         // Views from single_user_item layout
-        TextView username;
+        TextView username, lastSentMessage, lastSendMessageTime;
         CardView single_user_layout;
+        ImageView lastSentMessageStatus;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             username = itemView.findViewById(R.id.person_username);
+            lastSentMessage = itemView.findViewById(R.id.last_sent_message);
+            lastSendMessageTime = itemView.findViewById(R.id.last_sent_message_time);
+            lastSentMessageStatus = itemView.findViewById(R.id.last_sent_message_status);
             single_user_layout = itemView.findViewById(R.id.single_user_layout);
         }
+    }
+
+    // Method to get the last message, and set message to last_message textview
+    private void getAndSetLastMessage(int position, TextView lastMessageView, String fullName, TextView lastMessageTimeView, ImageView lastSentMessageStatus){
+        database.child("p2p_chats/"+chatUsers.get(position).getValue(String.class)).limitToLast(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snap) {
+                // If snapshot is not null, then get message from snapshot
+                if(snap.exists()){
+                    // Going nesting because message are "pushed" by push() method
+                    for(DataSnapshot data : snap.getChildren()){
+                        // If the sender of message is currently logged user, then add "You: " prefix
+                        Message lastSentMessage = data.getValue(Message.class);
+                        if(lastSentMessage.getSenderUid().equals(fAuth.getCurrentUser().getUid())){
+                            lastMessageView.setText("You: "+lastSentMessage.getMessage());
+                        } else {
+                            lastMessageView.setText(lastSentMessage.getMessage());
+                        }
+                        // Show last sent message time also
+                        lastMessageTimeView.setText(ChatAdapter.getFormattedTime(lastSentMessage.getTime()));
+
+                        // set tick according to message status, if message is seen already, then show double tick else single
+                        if(lastSentMessage.getMessageSeen()){
+                            lastSentMessageStatus.setImageResource(R.drawable.ic_double_tick);
+                        } else {
+                            lastSentMessageStatus.setImageResource(R.drawable.ic_single_tick);
+                        }
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
     }
 }

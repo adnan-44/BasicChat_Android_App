@@ -7,12 +7,16 @@
         <entry key="app/src/main/res/drawable/edit_text_shape.xml" value="0.21145833333333333" />
         <entry key="app/src/main/res/drawable/ic_send.xml" value="0.21145833333333333" />
         <entry key="app/src/main/res/layout/activity_add_new_chat.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_chat.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_chat.xml" value="0.5" />
         <entry key="app/src/main/res/layout/activity_create_new_account.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/single_message_view.xml" value="0.75" />
+        <entry key="app/src/main/res/layout/single_left_message_view.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/single_message_view.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/single_receiver_message_view.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/single_right_message_view.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/single_sender_message_view.xml" value="0.67" />
         <entry key="app/src/main/res/layout/single_user_item.xml" value="0.33" />
         <entry key="app/src/main/res/layout/user_found_dialog.xml" value="0.67" />
         <entry key="app/src/main/res/menu/main_menu.xml" value="0.1953125" />

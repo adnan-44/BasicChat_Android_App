@@ -3,15 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
     android:id="@+id/main_message_layout" >
 
     <androidx.cardview.widget.CardView
         android:id="@+id/single_message_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_alignParentEnd="true"
+        app:cardBackgroundColor="@color/purple_200"
         app:cardCornerRadius="15dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,6 +27,7 @@
                 android:layout_height="wrap_content"
                 android:text="Empty"
                 android:textSize="20sp"
+                android:textColor="@color/white"
                 android:paddingStart="3dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -36,33 +39,23 @@
                 android:paddingEnd="2dp"
                 android:text="time_stamp"
                 android:textSize="10sp"
+                android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/message_textView"
                 app:layout_constraintTop_toBottomOf="@+id/message_textView" />
 
             <ImageView
-                android:id="@+id/single_tick"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
+                android:id="@+id/tick_image"
+                android:layout_width="17dp"
+                android:layout_height="17dp"
                 android:layout_marginEnd="3dp"
                 android:src="@drawable/ic_single_tick"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/message_time" />
 
-            <ImageView
-                android:id="@+id/double_tick"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:visibility="gone"
-                android:src="@drawable/ic_double_tick"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/message_time"/>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
-
 
 </RelativeLayout>
