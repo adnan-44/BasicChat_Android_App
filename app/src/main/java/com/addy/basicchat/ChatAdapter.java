@@ -20,7 +20,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
 
@@ -44,6 +46,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         /* bind model data with message view
            Change text message view background if its senderUid is same as current Uid (to make diff between sender/receiver messages)
         */
+
+        /* If currentUid and senderUid (message) are not equal, means receiver is seeing the message
+         * so simply update the messageSeen field to true, to indicate that message is seen */
+
+        if (!currentUid.equals(allMessages.get(position).second.getSenderUid())){
+            // Create an map to change messageSeen to set true (to show that message is seen by users)
+            Map<String, Object> updateMessageSeen = new HashMap<>();
+            updateMessageSeen.put("messageSeen", Boolean.valueOf("true"));
+            database.child("p2p_chats/" + uniqueId).child(allMessages.get(position).first).updateChildren(updateMessageSeen);
+        }
 
         if(!allMessages.get(position).second.getSenderUid().equals(currentUid)){
             // change background color, make sender message card different that receivers
