@@ -17,6 +17,8 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.SimpleDateFormat;
+
 public class ChatAdapter extends FirebaseRecyclerAdapter<Message, ChatAdapter.ChatViewHolder> {
 
     private Context context;
@@ -48,7 +50,7 @@ public class ChatAdapter extends FirebaseRecyclerAdapter<Message, ChatAdapter.Ch
 
         }
         holder.messageText.setText(model.getMessage());  // Set the message from model
-        holder.messageTime.setText(model.getTime());
+        holder.messageTime.setText(getFormattedTime(model.getTime()));
     }
 
     @NonNull
@@ -75,5 +77,11 @@ public class ChatAdapter extends FirebaseRecyclerAdapter<Message, ChatAdapter.Ch
             messageTime = itemView.findViewById(R.id.message_time);
             messageCard = itemView.findViewById(R.id.single_message_card);
         }
+    }
+
+    // Method to get formatted date string from date-ime stamp
+    public static String getFormattedTime(String user_created_time){
+        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a");
+        return formatter.format(Long.valueOf(user_created_time)).toUpperCase();
     }
 }
