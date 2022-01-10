@@ -67,5 +67,16 @@ public class LoginActivity extends AppCompatActivity {
                         });
             }
         });
+
+	// Create new user on signup button click
+        signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open CreateNewAccount activity using intents, to create new user
+                Intent intent = new Intent(LoginActivity.this, CreateNewAccountActivity.class);
+                startActivityForResult(intent, 1);
+                finish();
+            }
+        });
     }
 }
