@@ -3,6 +3,7 @@ package com.addy.basicchat;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,6 +26,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChatActivity extends AppCompatActivity {
 
     // GUI stuff
@@ -36,9 +40,9 @@ public class ChatActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     // Firebase stuff
+    private List<Pair<String, Message>> allMessages;  // To store the message from realtime database, will you in adapter
     private FirebaseAuth fAuth;
     private DatabaseReference database;
-    private FirebaseRecyclerOptions<Message> options;  // which will be used by our ChatAdapter
 
     // Other stuff
     private String userUid;
@@ -55,7 +59,9 @@ public class ChatActivity extends AppCompatActivity {
         sendButton = findViewById(R.id.send_message);
         toolbar = findViewById(R.id.toolbar);
         progressBar = findViewById(R.id.progress_bar);
+        userUid = getIntent().getStringExtra("userUid");    // Get chat user's Uid from calling intent
         uniqueId = getIntent().getStringExtra("uniqueId");    // Get chat uniqueId from calling intent
+        allMessages = new ArrayList<>();    // initiate the list as arraylist
 
         // Firebase init
         fAuth = FirebaseAuth.getInstance();
@@ -66,11 +72,15 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         progressBar.setVisibility(View.VISIBLE);
 
+        // calling showMessages method to get messages and show them to recyclerView
+        showMessages();
+
         /* Use Query class to create Query to fetch data from Firebase database of chat, add valueEventListener
          * User chats are located at p2p_chats -> uniqueId
          * where uniqueId = "userUid+otherUid"
          */
 
+        /*
         final Query query = FirebaseDatabase.getInstance().getReference("p2p_chats/"+uniqueId)
                 .limitToLast(100);
         query.addValueEventListener(new ValueEventListener() {
@@ -93,8 +103,9 @@ public class ChatActivity extends AppCompatActivity {
         chatRecyclerView.setLayoutManager(layoutManager);
 
         // Attach adapter to recyclerView
-        adapter = new ChatAdapter(options, getApplicationContext(), ChatActivity.this);
+        adapter = new ChatAdapter(options, getApplicationContext(), ChatActivity.this, uniqueId);
         chatRecyclerView.setAdapter(adapter);
+        */
 
         // click listeners implementation for send button onclick
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -136,15 +147,39 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        adapter.startListening();       // Start listen to data onStart of activity
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();        // Stop listening to data onStop of activity
+    // Method to take care of getting messages from cloud database and show messages to recyclerView
+    private void showMessages(){
+        // start the loading animation
+        progressBar.setVisibility(View.VISIBLE);
+
+        // Now get the messages with their node key, and store them in list of "Pairs"
+        database.child("p2p_chats/" + uniqueId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                allMessages.clear(); // clear any previous message data from the list
+                // now iterate over children snapshots
+                for(DataSnapshot snap : snapshot.getChildren()){
+                    // now create an pair of (snap_key, snap_value)
+                    Pair<String, Message> messageData = new Pair<>(snap.getKey(),
+                            snap.getValue(Message.class));
+                    allMessages.add(messageData);
+                }
+                // Update the adapter with updated data lists
+                progressBar.setVisibility(View.GONE);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+
+        // Recycler view, set Linear layout manager, create our custom adapter using allMessages list, attach adapter to recyclerView
+        LinearLayoutManager layoutManager = new LinearLayoutManager(ChatActivity.this);
+        layoutManager.setStackFromEnd(true);
+        chatRecyclerView.setLayoutManager(layoutManager);
+        adapter = new ChatAdapter(getApplicationContext(), ChatActivity.this, allMessages, uniqueId);
+        chatRecyclerView.setAdapter(adapter);
+
     }
 
 }

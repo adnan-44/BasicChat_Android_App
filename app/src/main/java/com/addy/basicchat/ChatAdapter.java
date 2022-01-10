@@ -12,32 +12,40 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
-public class ChatAdapter extends FirebaseRecyclerAdapter<Message, ChatAdapter.ChatViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
 
     private Context context;
-    private String currentUid;
     private Activity activity;
+    private List<Pair<String, Message>> allMessages;     //  List to store the model of class Message
 
-    public ChatAdapter(@NonNull FirebaseRecyclerOptions<Message> options, Context context, Activity activity) {
-        super(options);
+    // Firebase stuff
+    private String currentUid, uniqueId;
+    private DatabaseReference database;
+
+    public ChatAdapter(Context context, Activity activity, List allMessages, String uniqueId){
         this.context = context;
         this.activity = activity;
+        this.allMessages = allMessages;
+        this.uniqueId = uniqueId;
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ChatViewHolder holder, int position, @NonNull Message model) {
+    public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         /* bind model data with message view
            Change text message view background if its senderUid is same as current Uid (to make diff between sender/receiver messages)
         */
-        if(!model.getSenderUid().equals(currentUid)){
+
+        if(!allMessages.get(position).second.getSenderUid().equals(currentUid)){
             // change background color, make sender message card different that receivers
             holder.messageCard.setCardBackgroundColor(Color.parseColor("#FF6200EE"));
             holder.messageText.setTextColor(Color.parseColor("#FFFFFF"));
@@ -52,13 +60,13 @@ public class ChatAdapter extends FirebaseRecyclerAdapter<Message, ChatAdapter.Ch
         }
 
         // if message is already seen, means messageSeen value is true so show the double_tick and hide single_tick
-        if(model.getMessageSeen()){
+        if(allMessages.get(position).second.getMessageSeen()){
             holder.singleTick.setVisibility(View.GONE);
             holder.doubleTick.setVisibility(View.VISIBLE);
         }
 
-        holder.messageText.setText(model.getMessage());  // Set the message from model
-        holder.messageTime.setText(getFormattedTime(model.getTime()));
+        holder.messageText.setText(allMessages.get(position).second.getMessage());  // Set the message from model
+        holder.messageTime.setText(getFormattedTime(allMessages.get(position).second.getTime()));
     }
 
     @NonNull
@@ -67,12 +75,17 @@ public class ChatAdapter extends FirebaseRecyclerAdapter<Message, ChatAdapter.Ch
         // Inflate single_message_view and pass it to the ViewHolder
         currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_message_view, parent, false);
+        database = FirebaseDatabase.getInstance().getReference();
         activity.findViewById(R.id.progress_bar).setVisibility(View.GONE);
         return new ChatViewHolder(view);
     }
 
-    public class ChatViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public int getItemCount() {
+        return allMessages.size();
+    }
 
+    public class ChatViewHolder extends RecyclerView.ViewHolder{
         // GUI stuff
         TextView messageText, messageTime;
         CardView messageCard;
