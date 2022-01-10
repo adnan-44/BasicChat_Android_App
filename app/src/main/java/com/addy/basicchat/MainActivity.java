@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,16 +18,30 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     // GUI stuff
     private Button login;
+    private RecyclerView homeRecyclerView;
     private FloatingActionButton addNewChat;
     private Toolbar toolbar;
     private ProgressBar progressBar;
 
+    // Firebase stuff
+    private FirebaseAuth fAuth;
+    private DatabaseReference database;
+
     // Other stuff
+    private ShowUsersAdapter adapter;
+    private ArrayList<DataSnapshot> chatUsers;   // to store chat users info
     private static final int ACTIVITY_REQUEST_CODE = 1;
 
     @Override
@@ -35,9 +51,26 @@ public class MainActivity extends AppCompatActivity {
 
         // init vars
         login = findViewById(R.id.login_button);
+        homeRecyclerView = findViewById(R.id.home_recycler_view);
         toolbar = findViewById(R.id.toolbar);
         addNewChat = findViewById(R.id.add_new_chat);
         progressBar = findViewById(R.id.progress_bar);
+        chatUsers = new ArrayList<>();
+        fAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance().getReference();
+
+        // Only show "Start chat" button if an user is already signed in
+        if(fAuth.getCurrentUser() == null){
+            login.setVisibility(View.VISIBLE);
+            homeRecyclerView.setVisibility(View.GONE);
+            addNewChat.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+        } else {
+            login.setVisibility(View.GONE);
+            homeRecyclerView.setVisibility(View.VISIBLE);
+            addNewChat.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         // Set our custom toolbar as action bar
         setSupportActionBar(toolbar);
@@ -52,7 +85,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-	// open AddNewChat Activity to add new chat
+        if(fAuth.getCurrentUser() != null){
+            // Set LinearLayout as layout manager for our recyclerView
+            homeRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+            // call showUsers method to take care of recycler adapter stuff
+            showUsers();
+        }
+
+        // open AddNewChat Activity to add new chat
         addNewChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,8 +120,32 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu); // inflate our custom menu item
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
+    }
+
+    // Method to get and set chat users info into chatUsers list
+    private void showUsers(){
+        // get the users info from (p2p_users->uid->)
+        progressBar.setVisibility(View.VISIBLE);
+        database.child("p2p_users/"+fAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Clear any previous data from the chatUsers list
+                chatUsers.clear();
+
+                // Get all the children and insert one by one, first get chat usersUid
+                for(DataSnapshot snap : snapshot.getChildren()){
+                    chatUsers.add(snap);
+                }
+                adapter.notifyDataSetChanged();
+                progressBar.setVisibility(View.GONE);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+        adapter = new ShowUsersAdapter(MainActivity.this, getApplicationContext(), chatUsers);
+        homeRecyclerView.setAdapter(adapter);
     }
 
     @Override
