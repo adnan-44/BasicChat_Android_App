@@ -70,6 +70,7 @@ public class ChatActivity extends AppCompatActivity {
         // Set our custom toolbar as action bar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setToolbarTitle();  // Method to set user "full name" as toolbar title
         progressBar.setVisibility(View.VISIBLE);
 
         // calling showMessages method to get messages and show them to recyclerView
@@ -114,6 +115,20 @@ public class ChatActivity extends AppCompatActivity {
                 // call sendMessage to send text message to cloud database
                 sendMessage();
             }
+        });
+    }
+
+    // Method to set user "Full name" as title
+    private void setToolbarTitle(){
+        // get the user name from database using usersUid
+        database.child("all_users_info/"+userUid+ "/full_name").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // get the full_name from snapshot and update the toolbar title
+                toolbar.setTitle(snapshot.getValue(String.class));
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
         });
     }
 
