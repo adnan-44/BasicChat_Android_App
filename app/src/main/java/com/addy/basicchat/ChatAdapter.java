@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -49,6 +50,13 @@ public class ChatAdapter extends FirebaseRecyclerAdapter<Message, ChatAdapter.Ch
             holder.mainMessageLayout.setLayoutParams(layoutParams);
 
         }
+
+        // if message is already seen, means messageSeen value is true so show the double_tick and hide single_tick
+        if(model.getMessageSeen()){
+            holder.singleTick.setVisibility(View.GONE);
+            holder.doubleTick.setVisibility(View.VISIBLE);
+        }
+
         holder.messageText.setText(model.getMessage());  // Set the message from model
         holder.messageTime.setText(getFormattedTime(model.getTime()));
     }
@@ -69,6 +77,7 @@ public class ChatAdapter extends FirebaseRecyclerAdapter<Message, ChatAdapter.Ch
         TextView messageText, messageTime;
         CardView messageCard;
         RelativeLayout mainMessageLayout;
+        ImageView singleTick, doubleTick;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,6 +85,8 @@ public class ChatAdapter extends FirebaseRecyclerAdapter<Message, ChatAdapter.Ch
             messageText = itemView.findViewById(R.id.message_textView);
             messageTime = itemView.findViewById(R.id.message_time);
             messageCard = itemView.findViewById(R.id.single_message_card);
+            singleTick = itemView.findViewById(R.id.single_tick);
+            doubleTick = itemView.findViewById(R.id.double_tick);
         }
     }
 
