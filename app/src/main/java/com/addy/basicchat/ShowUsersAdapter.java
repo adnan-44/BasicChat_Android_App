@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -60,7 +61,8 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
                 // call getAndSetLastMessage() method to set last message from chats(database)
                 // Pass the lastSentMessage reference (to set the text), also pass user full_name
                 getAndSetLastMessage(position, holder.lastSentMessage,
-                        userInfo.getFull_name(), holder.lastSendMessageTime);
+                        userInfo.getFull_name(), holder.lastSendMessageTime,
+                        holder.lastSentMessageStatus);
             }
 
             @Override
@@ -90,18 +92,20 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
         // Views from single_user_item layout
         TextView username, lastSentMessage, lastSendMessageTime;
         CardView single_user_layout;
+        ImageView lastSentMessageStatus;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             username = itemView.findViewById(R.id.person_username);
             lastSentMessage = itemView.findViewById(R.id.last_sent_message);
             lastSendMessageTime = itemView.findViewById(R.id.last_sent_message_time);
+            lastSentMessageStatus = itemView.findViewById(R.id.last_sent_message_status);
             single_user_layout = itemView.findViewById(R.id.single_user_layout);
         }
     }
 
     // Method to get the last message, and set message to last_message textview
-    private void getAndSetLastMessage(int position, TextView lastMessageView, String fullName, TextView lastMessageTimeView){
+    private void getAndSetLastMessage(int position, TextView lastMessageView, String fullName, TextView lastMessageTimeView, ImageView lastSentMessageStatus){
         database.child("p2p_chats/"+chatUsers.get(position).getValue(String.class)).limitToLast(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snap) {
@@ -118,6 +122,13 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
                         }
                         // Show last sent message time also
                         lastMessageTimeView.setText(ChatAdapter.getFormattedTime(lastSentMessage.getTime()));
+
+                        // set tick according to message status, if message is seen already, then show double tick else single
+                        if(lastSentMessage.getMessageSeen()){
+                            lastSentMessageStatus.setImageResource(R.drawable.ic_double_tick);
+                        } else {
+                            lastSentMessageStatus.setImageResource(R.drawable.ic_single_tick);
+                        }
                     }
                 }
 
