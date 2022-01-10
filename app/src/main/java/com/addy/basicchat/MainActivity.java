@@ -14,12 +14,14 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
     // GUI stuff
     private Button login;
+    private FloatingActionButton addNewChat;
     private Toolbar toolbar;
     private ProgressBar progressBar;
 
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         // init vars
         login = findViewById(R.id.login_button);
         toolbar = findViewById(R.id.toolbar);
+        addNewChat = findViewById(R.id.add_new_chat);
         progressBar = findViewById(R.id.progress_bar);
 
         // Set our custom toolbar as action bar
@@ -46,6 +49,16 @@ public class MainActivity extends AppCompatActivity {
                 // open LoginActivity to login firebase user
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivityForResult(intent, ACTIVITY_REQUEST_CODE);
+            }
+        });
+
+	// open AddNewChat Activity to add new chat
+        addNewChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // open AddNewChat activity to add new users to your chat
+                Intent intent = new Intent(MainActivity.this, AddNewChatActivity.class);
+                startActivity(intent);
             }
         });
     }
