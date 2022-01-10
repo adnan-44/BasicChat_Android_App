@@ -10,6 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BasicChat">
 	<activity
+            android:name=".ChatActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
+	<activity
             android:name=".AddNewChatActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity"/>

@@ -19,10 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.ViewHolder>{
 
@@ -62,6 +59,17 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
+        });
+
+        // Open ChatActivity onclick on card
+        holder.single_user_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Add current user uniqueId and pass them to chatActivity
+                Intent intent = new Intent(activity, ChatActivity.class);
+                intent.putExtra("uniqueId", chatUsers.get(position).getValue(String.class));
+                activity.startActivity(intent);
+            }
         });
     }
 
