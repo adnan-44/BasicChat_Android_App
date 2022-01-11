@@ -87,9 +87,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 
         // Update tickImage according to messageSeen value, if messageSeen is true, then show double_tick
         if (allMessages.get(position).second.getMessageSeen()){
-            holder.tickImage.setImageResource(R.drawable.ic_double_tick);
+            holder.tickImage.setImageResource(R.drawable.ic_double_tick_white);
         } else {
-            holder.tickImage.setImageResource(R.drawable.ic_single_tick);   // set single tick
+            holder.tickImage.setImageResource(R.drawable.ic_single_tick_white);   // set single tick
         }
 
         holder.messageText.setText(allMessages.get(position).second.getMessage());  // Set the message from model
