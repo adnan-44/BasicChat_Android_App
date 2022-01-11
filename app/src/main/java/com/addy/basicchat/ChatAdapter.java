@@ -2,7 +2,6 @@ package com.addy.basicchat;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +33,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     private String currentUid, uniqueId;
     private DatabaseReference database;
 
+    // Other stuff
+    private static final int LEFT_SIDE = 1;
+    private static final int RIGHT_SIDE = 0;
+
     public ChatAdapter(Context context, Activity activity, List allMessages, String uniqueId){
         this.context = context;
         this.activity = activity;
@@ -41,11 +44,36 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         this.uniqueId = uniqueId;
     }
 
+    @NonNull
+    @Override
+    public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // If viewType is equals to LEFT_SIDE, then use the left_message_view
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View view;
+        if(viewType == RIGHT_SIDE){
+            // Then inflate right_message_view, because its card is placed in left side of parent
+            view = inflater.inflate(R.layout.right_message_view, parent, false);
+        } else {
+            // Else inflate the left_message_view, because its card is placed in right side of parent
+            view = inflater.inflate(R.layout.left_message_view, parent, false);
+        }
+
+        // Get some firebase reference
+        currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        database = FirebaseDatabase.getInstance().getReference();
+        activity.findViewById(R.id.progress_bar).setVisibility(View.GONE);
+
+        return new ChatViewHolder(view);
+    }
+
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
-        /* bind model data with message view
-           Change text message view background if its senderUid is same as current Uid (to make diff between sender/receiver messages)
-        */
+        // Bind the data (from lists) to the message cards
+
+        // Only show single/double tick in imageView (if message is sent by currentUser)
+        if (holder.getItemViewType() == RIGHT_SIDE){
+            holder.tickImage.setVisibility(View.VISIBLE);
+        }
 
         /* If currentUid and senderUid (message) are not equal, means receiver is seeing the message
          * so simply update the messageSeen field to true, to indicate that message is seen */
@@ -57,39 +85,27 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             database.child("p2p_chats/" + uniqueId).child(allMessages.get(position).first).updateChildren(updateMessageSeen);
         }
 
-        if(!allMessages.get(position).second.getSenderUid().equals(currentUid)){
-            // change background color, make sender message card different that receivers
-            holder.messageCard.setCardBackgroundColor(Color.parseColor("#FF6200EE"));
-            holder.messageText.setTextColor(Color.parseColor("#FFFFFF"));
-            holder.messageTime.setTextColor(Color.parseColor("#FFFFFF"));
-
-            // Change the position of messageCard according to sender/receiver, so that user can differentiate between message cards
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) holder.messageCard.getLayoutParams();
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            layoutParams.setMargins(10,10,10,0);
-            holder.mainMessageLayout.setLayoutParams(layoutParams);
-
-        }
-
-        // if message is already seen, means messageSeen value is true so show the double_tick and hide single_tick
-        if(allMessages.get(position).second.getMessageSeen()){
-            holder.singleTick.setVisibility(View.GONE);
-            holder.doubleTick.setVisibility(View.VISIBLE);
+        // Update tickImage according to messageSeen value, if messageSeen is true, then show double_tick
+        if (allMessages.get(position).second.getMessageSeen()){
+            holder.tickImage.setImageResource(R.drawable.ic_double_tick);
+        } else {
+            holder.tickImage.setImageResource(R.drawable.ic_single_tick);   // set single tick
         }
 
         holder.messageText.setText(allMessages.get(position).second.getMessage());  // Set the message from model
         holder.messageTime.setText(getFormattedTime(allMessages.get(position).second.getTime()));
     }
 
-    @NonNull
     @Override
-    public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate single_message_view and pass it to the ViewHolder
-        currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_message_view, parent, false);
-        database = FirebaseDatabase.getInstance().getReference();
-        activity.findViewById(R.id.progress_bar).setVisibility(View.GONE);
-        return new ChatViewHolder(view);
+    public int getItemViewType(int position) {
+        // Return itemViewType according to sender receiver Uid
+        if (allMessages.get(position).second.getSenderUid().equals(currentUid)){
+            // If the currentUid is same as senderUid(in message), then use right_message_view
+            return RIGHT_SIDE;
+        } else {
+            // else use the receiver_message_view
+            return LEFT_SIDE;
+        }
     }
 
     @Override
@@ -102,7 +118,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         TextView messageText, messageTime;
         CardView messageCard;
         RelativeLayout mainMessageLayout;
-        ImageView singleTick, doubleTick;
+        ImageView tickImage;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -110,8 +126,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
             messageText = itemView.findViewById(R.id.message_textView);
             messageTime = itemView.findViewById(R.id.message_time);
             messageCard = itemView.findViewById(R.id.single_message_card);
-            singleTick = itemView.findViewById(R.id.single_tick);
-            doubleTick = itemView.findViewById(R.id.double_tick);
+            tickImage = itemView.findViewById(R.id.tick_image);
         }
     }
 
