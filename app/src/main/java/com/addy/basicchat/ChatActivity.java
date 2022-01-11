@@ -142,6 +142,7 @@ public class ChatActivity extends AppCompatActivity {
             final Message message = new Message();
             message.setMessage(messageInput.getText().toString());  // Message
             message.setSenderUid(fAuth.getCurrentUser().getUid());  // current User's Uid
+            message.setMessageSeen(false);  // because message is not seen yet :)
 
             // Get current time
             message.setTime(String.valueOf(System.currentTimeMillis()));
