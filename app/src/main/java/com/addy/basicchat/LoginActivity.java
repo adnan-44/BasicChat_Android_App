@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView signup;
     private Button login;
     private Toolbar toolbar;
+    private ProgressBar progressBar;
 
     // Firebase stuff
     private FirebaseAuth fAuth;
@@ -39,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         login = findViewById(R.id.login);
         signup = findViewById(R.id.signup_text);
         toolbar = findViewById(R.id.toolbar);
+        progressBar = findViewById(R.id.progress_bar);
         fAuth = FirebaseAuth.getInstance();
 
         // Set our custom toolbar as action bar
@@ -49,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);  // show loading screen
                 // Sign firebase user into app using email password
                 fAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -63,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
                                 } else {
                                     Toast.makeText(LoginActivity.this, "Failed to sign-in", Toast.LENGTH_LONG).show();
                                 }
+                                progressBar.setVisibility(View.GONE);   // Hide loading once operation is completed
                             }
                         });
             }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,6 +29,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
     private EditText fullName, email, password;
     private Button createAccount;
     private Toolbar toolbar;
+    private ProgressBar progressBar;
 
     // Firebase stuff
     private FirebaseAuth fAuth;
@@ -47,6 +49,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         toolbar = findViewById(R.id.toolbar);
         createAccount = findViewById(R.id.create_account);
+        progressBar = findViewById(R.id.progress_bar);
         fAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference("all_users_info");
 
@@ -58,6 +61,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
         createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);  // show loading screen
                 // First create new firebase account using provided email password
                 fAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -101,6 +105,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
                                 Intent intent = new Intent(CreateNewAccountActivity.this, MainActivity.class);
                                 setResult(RESULT_OK, getIntent());
                                 startActivity(intent);
+                                progressBar.setVisibility(View.GONE);   // Hide loading once operation is completed
                                 finish();
                             }
                         });
