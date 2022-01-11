@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -182,6 +181,9 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 // Update the adapter with updated data lists
                 progressBar.setVisibility(View.GONE);
+
+                // Scroll chatRecyclerView to last position on each new message
+                chatRecyclerView.smoothScrollToPosition(allMessages.size() - 1);
                 adapter.notifyDataSetChanged();
             }
 
