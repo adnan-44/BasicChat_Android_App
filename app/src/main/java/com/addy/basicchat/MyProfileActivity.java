@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -114,6 +116,15 @@ public class MyProfileActivity extends AppCompatActivity {
                 fullName.setText(userInfo.getFull_name());
                 email.setText(userInfo.getEmail());
                 bio.setText(userInfo.getBio());
+
+                // Show default profile image if getProfile_url is "default"
+                if (userInfo.getImage_url().equals("default")){
+                    profileImage.setImageResource(R.drawable.ic_account);
+                    profileImage.setBackgroundColor(Color.parseColor("#777777")); // grey color
+                } else {
+                    // Use glide library to get and set image (using Uri, automatically) in profileImage imageView
+                    Glide.with(MyProfileActivity.this).load(userInfo.getImage_url()).into(profileImage);
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
