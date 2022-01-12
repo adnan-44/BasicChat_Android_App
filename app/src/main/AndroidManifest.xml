@@ -10,6 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BasicChat">
         <activity
+            android:name=".UpdateProfileActivity"
+            android:exported="false"
+            android:parentActivityName=".MyProfileActivity" />
+        <activity
             android:name=".MyProfileActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity"/>

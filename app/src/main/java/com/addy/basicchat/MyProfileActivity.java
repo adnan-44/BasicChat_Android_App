@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -48,6 +50,15 @@ public class MyProfileActivity extends AppCompatActivity {
 
         // Call setProfileInfo() method to get profile values from database and set them in views
         setProfileInfo();
+
+        // Open EditProfileActivity onClick of edit button
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyProfileActivity.this, UpdateProfileActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     // Method to take care of getting user info from realtime database and set them in views
@@ -62,7 +73,7 @@ public class MyProfileActivity extends AppCompatActivity {
                 // Set the values into textViews now
                 fullName.setText(userInfo.getFull_name());
                 email.setText(userInfo.getEmail());
-                // TODO bio stuff
+                bio.setText(userInfo.getBio());
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
