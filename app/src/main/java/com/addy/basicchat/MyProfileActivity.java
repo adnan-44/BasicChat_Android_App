@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ public class MyProfileActivity extends AppCompatActivity {
     private Button edit;
     private Toolbar toolbar;
     private ImageView profileImage, selectImage;
+    private ProgressDialog progressDialog;
 
     // Firebase stuff
     private FirebaseAuth fAuth;
@@ -73,6 +75,10 @@ public class MyProfileActivity extends AppCompatActivity {
 
         // Call setProfileInfo() method to get profile values from database and set them in views
         setProfileInfo();
+
+        // Progress Dialog stuff
+        progressDialog = new ProgressDialog(MyProfileActivity.this);
+        progressDialog.setTitle("Uploading image");
 
         // Open intent to select image for profile onClick of select_profile_image button
         selectImage.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +126,7 @@ public class MyProfileActivity extends AppCompatActivity {
 
         if (requestCode == IMAGE_REQUEST_CODE && data != null && data.getData() != null){
             // If data is not null, then get Uri from data
+            progressDialog.show();  // show the progress dialog
             profileImageUri = data.getData();
             uploadProfileImage(data.getData());
         }
@@ -144,13 +151,14 @@ public class MyProfileActivity extends AppCompatActivity {
                         Toast.makeText(MyProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+                progressDialog.dismiss();   // dismiss the progress dialog once operation is finished
             }
         });
     }
 
     // Method to take care of updating user info database for profile image
     private void updateUserInfo(Uri downloadableImageUri) {
-        // Create a Map for imageUrl to update user info 
+        // Create a Map for imageUrl to update user info
         Map<String, Object> info = new HashMap<>();
         info.put("image_url", downloadableImageUri.toString());
 
