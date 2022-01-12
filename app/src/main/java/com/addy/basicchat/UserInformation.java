@@ -3,7 +3,7 @@ package com.addy.basicchat;
 public class UserInformation {
 
     // Model class for all_user_info
-    private String full_name, email, password, uid;
+    private String bio, full_name, email, password, uid;
 
     // Empty public constructor
     public UserInformation(){
@@ -11,6 +11,14 @@ public class UserInformation {
     }
 
     // Getter and setters
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
     public void setFull_name(String fullName){
         this.full_name = fullName;
     }
