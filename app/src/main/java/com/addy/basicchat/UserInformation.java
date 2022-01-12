@@ -3,7 +3,7 @@ package com.addy.basicchat;
 public class UserInformation {
 
     // Model class for all_user_info
-    private String bio, full_name, email, password, uid;
+    private String bio, full_name, email, password, uid, image_url;
 
     // Empty public constructor
     public UserInformation(){
@@ -11,6 +11,14 @@ public class UserInformation {
     }
 
     // Getter and setters
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
+    }
+
+    public String getImage_url() {
+        return image_url;
+    }
+
     public void setBio(String bio) {
         this.bio = bio;
     }
