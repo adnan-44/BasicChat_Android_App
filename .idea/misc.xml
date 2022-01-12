@@ -9,9 +9,11 @@
         <entry key="app/src/main/res/layout/activity_add_new_chat.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_chat.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_create_new_account.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_edit_profile.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_my_profile.xml" value="0.25" />
         <entry key="app/src/main/res/layout/left_message_view.xml" value="0.9" />
         <entry key="app/src/main/res/layout/left_message_view1.xml" value="0.1953125" />
         <entry key="app/src/main/res/layout/right_message_view.xml" value="0.1953125" />

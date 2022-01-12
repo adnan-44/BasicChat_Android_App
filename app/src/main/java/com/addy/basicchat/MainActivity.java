@@ -114,6 +114,12 @@ public class MainActivity extends AppCompatActivity {
                 finish();
                 Toast.makeText(MainActivity.this, "User logged out", Toast.LENGTH_SHORT).show();
                 return true;
+
+            case R.id.profile_menu:
+                // Open MyProfileActivity on "My Profile" option select
+                Intent myProfile = new Intent(MainActivity.this, MyProfileActivity.class);
+                startActivity(myProfile);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
