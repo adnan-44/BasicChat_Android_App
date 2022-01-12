@@ -26,7 +26,7 @@ import java.util.Map;
 public class CreateNewAccountActivity extends AppCompatActivity {
 
     // GUI stuff
-    private EditText fullName, email, password;
+    private EditText fullName, email, password, confirmPassword;
     private Button createAccount;
     private Toolbar toolbar;
     private ProgressBar progressBar;
@@ -47,6 +47,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
         fullName = findViewById(R.id.full_name);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
+        confirmPassword = findViewById(R.id.confirm_password);
         toolbar = findViewById(R.id.toolbar);
         createAccount = findViewById(R.id.create_account);
         progressBar = findViewById(R.id.progress_bar);
@@ -62,53 +63,61 @@ public class CreateNewAccountActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 progressBar.setVisibility(View.VISIBLE);  // show loading screen
-                // First create new firebase account using provided email password
-                fAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                // update accountCreated boolean once account is created successfully
-                                if (task.isSuccessful()) {
-                                    accountCreated = true;
-                                    Toast.makeText(CreateNewAccountActivity.this, "Account created", Toast.LENGTH_SHORT).show();
 
-                                    // if account is successfully created then update provided fullName
-                                    if(accountCreated){
-                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                                .setDisplayName(fullName.getText().toString()). build();
-                                        FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdates)
-                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        // show toast on successful
-                                                        if(task.isSuccessful()){
-                                                            Toast.makeText(CreateNewAccountActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
-                                                        } else {
-                                                            Toast.makeText(CreateNewAccountActivity.this, "failed to update profile", Toast.LENGTH_SHORT).show();
+                // Only proceed account creation if both password fields are same, else show toast
+                if(password.getText().toString().equals(confirmPassword.getText().toString())){
+                    // First create new firebase account using provided email password
+                    fAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    // update accountCreated boolean once account is created successfully
+                                    if (task.isSuccessful()) {
+                                        accountCreated = true;
+                                        Toast.makeText(CreateNewAccountActivity.this, "Account created", Toast.LENGTH_SHORT).show();
+
+                                        // if account is successfully created then update provided fullName
+                                        if(accountCreated){
+                                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                                    .setDisplayName(fullName.getText().toString()). build();
+                                            FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdates)
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            // show toast on successful
+                                                            if(task.isSuccessful()){
+                                                                Toast.makeText(CreateNewAccountActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
+                                                            } else {
+                                                                Toast.makeText(CreateNewAccountActivity.this, "failed to update profile", Toast.LENGTH_SHORT).show();
+                                                            }
                                                         }
-                                                    }
-                                                });
+                                                    });
 
-                                        // Call addAccountInfo method to add newly created account info into firebase realtime database
-                                        addAccountInfo(fullName.getText().toString(),
-                                                email.getText().toString(),
-                                                password.getText().toString(),
-                                                FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                            // Call addAccountInfo method to add newly created account info into firebase realtime database
+                                            addAccountInfo(fullName.getText().toString(),
+                                                    email.getText().toString(),
+                                                    password.getText().toString(),
+                                                    FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                        }
+
+                                    } else {
+                                        accountCreated = false;
+                                        Toast.makeText(CreateNewAccountActivity.this, task.getException().toString(), Toast.LENGTH_LONG).show();
                                     }
 
-                                } else {
-                                    accountCreated = false;
-                                    Toast.makeText(CreateNewAccountActivity.this, task.getException().toString(), Toast.LENGTH_LONG).show();
+                                    // close current activity once account get created
+                                    Intent intent = new Intent(CreateNewAccountActivity.this, MainActivity.class);
+                                    setResult(RESULT_OK, getIntent());
+                                    startActivity(intent);
+                                    progressBar.setVisibility(View.GONE);   // Hide loading once operation is completed
+                                    finish();
                                 }
-
-                                // close current activity once account get created
-                                Intent intent = new Intent(CreateNewAccountActivity.this, MainActivity.class);
-                                setResult(RESULT_OK, getIntent());
-                                startActivity(intent);
-                                progressBar.setVisibility(View.GONE);   // Hide loading once operation is completed
-                                finish();
-                            }
-                        });
+                            });
+                } else {
+                    // If password and confirmPassword fields are not same, show toast and disable loading
+                    Toast.makeText(CreateNewAccountActivity.this, "Password fields must be same", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                }
             }
         });
     }
