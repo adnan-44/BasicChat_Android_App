@@ -131,6 +131,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
         info.put("full_name", fullName);
         info.put("email", email);
         info.put("password", password);
+        info.put("image_url", "default");   // Set image_url to default, to show an default profile image to users
 
         // If "bio" field is empty, means user didn't enter anything, then simply use default bio
         if (bio.getText().toString().trim().isEmpty()){
