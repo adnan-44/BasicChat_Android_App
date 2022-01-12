@@ -26,7 +26,7 @@ import java.util.Map;
 public class CreateNewAccountActivity extends AppCompatActivity {
 
     // GUI stuff
-    private EditText fullName, email, password, confirmPassword;
+    private EditText bio, fullName, email, password, confirmPassword;
     private Button createAccount;
     private Toolbar toolbar;
     private ProgressBar progressBar;
@@ -45,6 +45,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
 
         // Init vars
         fullName = findViewById(R.id.full_name);
+        bio = findViewById(R.id.bio);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         confirmPassword = findViewById(R.id.confirm_password);
@@ -130,6 +131,14 @@ public class CreateNewAccountActivity extends AppCompatActivity {
         info.put("full_name", fullName);
         info.put("email", email);
         info.put("password", password);
+
+        // If "bio" field is empty, means user didn't enter anything, then simply use default bio
+        if (bio.getText().toString().trim().isEmpty()){
+            info.put("bio", getString(R.string.default_bio));
+        } else {
+            // Else you the bio that user entered
+            info.put("bio", bio.getText().toString().trim());
+        }
 
         databaseReference.child(uid).setValue(info).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override

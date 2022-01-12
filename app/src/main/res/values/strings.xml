@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Basic Chat</string>
+
+    <!-- Default bio string for new users -->
+    <string name="default_bio">New to Basic Chat</string>
 </resources>
