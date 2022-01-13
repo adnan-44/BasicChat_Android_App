@@ -11,10 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -148,8 +150,17 @@ public class AddNewChatActivity extends AppCompatActivity {
         // Get reference to user_found_dialog views and update them with userInformation
         final TextView fullName = userFoundDialog.findViewById(R.id.full_name);
         final TextView personEmail = userFoundDialog.findViewById(R.id.person_email);
+        final TextView personBio = userFoundDialog.findViewById(R.id.person_bio);
+        final ImageView personImage = userFoundDialog.findViewById(R.id.person_image);
         fullName.setText(userInformation.getFull_name());
         personEmail.setText(userInformation.getEmail());
+        personBio.setText(userInformation.getBio());
+
+        // If getImage_url() returns other value than "default", it means user have an profile image already or using default image
+        if (!userInformation.getImage_url().equals("default")){
+            // Use Glide library to get and set image (using Uri, automatically) in personImage imageView
+            Glide.with(AddNewChatActivity.this).load(userInformation.getImage_url()).into(personImage);
+        }
 
         // click listener for "add" choice button
         userFoundDialog.findViewById(R.id.add_button).setOnClickListener(new View.OnClickListener() {

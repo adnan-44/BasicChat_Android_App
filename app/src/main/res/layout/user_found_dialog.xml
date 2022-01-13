@@ -42,14 +42,46 @@
                     android:orientation="vertical"
                     android:padding="10dp">
 
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/image_card"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center_horizontal"
+                        app:cardCornerRadius="80dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/person_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:backgroundTint="@color/custom_grey"
+                            android:background="@drawable/ic_account"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.cardview.widget.CardView>
+
                     <TextView
                         android:id="@+id/full_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
                         android:text="Full Name"
                         android:textStyle="bold"
-                        android:textSize="20sp" />
+                        android:textSize="25sp" />
+
+                    <TextView
+                        android:id="@+id/person_bio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:text="Bio"
+                        android:textStyle="italic"
+                        android:textColor="@color/purple_200"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/person_email"
