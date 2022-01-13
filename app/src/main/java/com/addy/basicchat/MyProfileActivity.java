@@ -117,12 +117,9 @@ public class MyProfileActivity extends AppCompatActivity {
                 email.setText(userInfo.getEmail());
                 bio.setText(userInfo.getBio());
 
-                // Show default profile image if getProfile_url is "default"
-                if (userInfo.getImage_url().equals("default")){
-                    profileImage.setImageResource(R.drawable.ic_account);
-                    profileImage.setBackgroundColor(Color.parseColor("#777777")); // grey color
-                } else {
-                    // Use glide library to get and set image (using Uri, automatically) in profileImage imageView
+                // Use Glide library to get and set image (using Uri, automatically) in profileImage
+                if( !userInfo.getImage_url().equals("default")){
+                    // If user's profile image is not "default"
                     Glide.with(MyProfileActivity.this).load(userInfo.getImage_url()).into(profileImage);
                 }
             }

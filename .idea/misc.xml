@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/drawable/circle_shape.xml" value="0.21145833333333333" />
         <entry key="app/src/main/res/drawable/edit_text_shape.xml" value="0.21145833333333333" />
+        <entry key="app/src/main/res/drawable/ic_account.xml" value="0.21145833333333333" />
         <entry key="app/src/main/res/drawable/ic_edit.xml" value="0.21145833333333333" />
         <entry key="app/src/main/res/drawable/ic_send.xml" value="0.21145833333333333" />
         <entry key="app/src/main/res/layout/activity_add_new_chat.xml" value="0.25" />
@@ -14,7 +15,7 @@
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_my_profile.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_my_profile.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_update_profile.xml" value="0.1953125" />
         <entry key="app/src/main/res/layout/left_message_view.xml" value="0.9" />
         <entry key="app/src/main/res/layout/left_message_view1.xml" value="0.1953125" />

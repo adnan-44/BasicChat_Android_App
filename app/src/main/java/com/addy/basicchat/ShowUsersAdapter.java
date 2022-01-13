@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,6 +64,9 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
                 getAndSetLastMessage(position, holder.lastSentMessage,
                         userInfo.getFull_name(), holder.lastSendMessageTime,
                         holder.lastSentMessageStatus);
+
+                // Call getAndSetProfileImage() method to set User's profile image from firebase storage
+                getAndSetProfileImage(holder.profileImage, userInfo);
             }
 
             @Override
@@ -92,7 +96,7 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
         // Views from single_user_item layout
         TextView username, lastSentMessage, lastSendMessageTime;
         CardView single_user_layout;
-        ImageView lastSentMessageStatus;
+        ImageView lastSentMessageStatus, profileImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -100,6 +104,7 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
             lastSentMessage = itemView.findViewById(R.id.last_sent_message);
             lastSendMessageTime = itemView.findViewById(R.id.last_sent_message_time);
             lastSentMessageStatus = itemView.findViewById(R.id.last_sent_message_status);
+            profileImage = itemView.findViewById(R.id.person_image);
             single_user_layout = itemView.findViewById(R.id.single_user_layout);
         }
     }
@@ -136,5 +141,16 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
         });
+    }
+
+    // Method to get person's profile image and set into person_image
+    private void getAndSetProfileImage(ImageView profileImage, UserInformation userInfo){
+
+        // If getImage_url value is not "default", then show image using Glide library
+        if(!userInfo.getImage_url().equals("default")){
+            // Use glide library to get and set image (using Uri, automatically) in profileImage imageView
+            Glide.with(context).load(userInfo.getImage_url()).circleCrop().into(profileImage);
+        }
+
     }
 }
