@@ -172,19 +172,28 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 allMessages.clear(); // clear any previous message data from the list
-                // now iterate over children snapshots
-                for(DataSnapshot snap : snapshot.getChildren()){
-                    // now create an pair of (snap_key, snap_value)
-                    Pair<String, Message> messageData = new Pair<>(snap.getKey(),
-                            snap.getValue(Message.class));
-                    allMessages.add(messageData);
-                }
-                // Update the adapter with updated data lists
-                progressBar.setVisibility(View.GONE);
 
-                // Scroll chatRecyclerView to last position on each new message
-                chatRecyclerView.smoothScrollToPosition(allMessages.size() - 1);
-                adapter.notifyDataSetChanged();
+                // Only move forward if we get any data from snapshot
+                if(snapshot != null){
+                    // If snapshot is not null, means there are messages in database
+                    // now iterate over children snapshots
+                    for(DataSnapshot snap : snapshot.getChildren()){
+                        // now create an pair of (snap_key, snap_value)
+                        Pair<String, Message> messageData = new Pair<>(snap.getKey(),
+                                snap.getValue(Message.class));
+                        allMessages.add(messageData);
+                    }
+                    // Update the adapter with updated data lists
+                    progressBar.setVisibility(View.GONE);
+
+                    // Scroll chatRecyclerView to last position on each new message
+                    if (allMessages.size() > 0){
+                        // Only scroll if there's at least 1 element present in list
+                        chatRecyclerView.smoothScrollToPosition(allMessages.size() - 1);
+                    }
+
+                    adapter.notifyDataSetChanged();
+                }
             }
 
             @Override
