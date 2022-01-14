@@ -25,9 +25,10 @@
         <entry key="app/src/main/res/layout/single_receiver_message_view.xml" value="0.5" />
         <entry key="app/src/main/res/layout/single_right_message_view.xml" value="0.67" />
         <entry key="app/src/main/res/layout/single_sender_message_view.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/single_user_info_item.xml" value="0.33" />
         <entry key="app/src/main/res/layout/single_user_item.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/user_found_dialog.xml" value="0.67" />
-        <entry key="app/src/main/res/menu/main_menu.xml" value="0.1953125" />
+        <entry key="app/src/main/res/layout/user_found_dialog.xml" value="0.5" />
+        <entry key="app/src/main/res/menu/main_menu.xml" value="0.25" />
       </map>
     </option>
   </component>

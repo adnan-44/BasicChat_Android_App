@@ -3,8 +3,11 @@ package com.addy.basicchat;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -35,6 +39,7 @@ public class AddNewChatActivity extends AppCompatActivity {
     private EditText email;
     private Button search;
     private Toolbar toolbar;
+    private RecyclerView allUsersRecycler;
     private ProgressBar progressBar;
 
     // Firebase stuff
@@ -54,6 +59,7 @@ public class AddNewChatActivity extends AppCompatActivity {
         email = findViewById(R.id.person_email);
         search = findViewById(R.id.search_button);
         toolbar = findViewById(R.id.toolbar);
+        allUsersRecycler = findViewById(R.id.all_users_recycler);
         progressBar = findViewById(R.id.progress_bar);
         allUsers = new ArrayList<>();
 
@@ -65,15 +71,51 @@ public class AddNewChatActivity extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference(); // database to point to root /
 
+        // Set LinearLayout as layout manager for our recyclerView
+        allUsersRecycler.setLayoutManager(new LinearLayoutManager(AddNewChatActivity.this));
+
         // search the given account onclick of search button
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // only proceed if user is not searching itself
                 if (!fAuth.getCurrentUser().getEmail().equals(email.getText().toString())) {
-                    searchUsers();  // Call searchUsers() method to search users
+                    //searchUsers();  // Call searchUsers() method to search users
+                    // Search users by their "fullName" field
+                    searchUserByName(email.getText().toString().toLowerCase());
                 }
             }
+        });
+    }
+
+    // Method to search users by name in realtime database
+    private void searchUserByName(String name){
+        progressBar.setVisibility(View.VISIBLE);
+
+        // Prepare a Query to search using fullName field
+        final Query searchQuery = database.child("all_users_info").orderByChild("full_name");
+        searchQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                allUsers.clear(); // clear any previous data
+
+                // Get data from snapshot, user info is store in nested form all_users_info -> uid
+                for (DataSnapshot snap : snapshot.getChildren()){
+                    // only add users to the list if they have name equal to user's input
+                    UserInformation userInfo = snap.getValue(UserInformation.class);
+                    if (userInfo.getFull_name().toLowerCase().contains(name) &&
+                             !userInfo.getUid().equals(fAuth.getCurrentUser().getUid())){
+                        allUsers.add(userInfo);
+                    }
+                }
+
+                // Create adapter and attach to users recyclerView and pass allUsers list to it
+                final ShowAllUsersAdapter adapter = new ShowAllUsersAdapter(AddNewChatActivity.this, allUsers, progressBar);
+                allUsersRecycler.setAdapter(adapter);
+                progressBar.setVisibility(View.GONE);   // Dismiss progress bar
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
         });
     }
 
@@ -139,7 +181,7 @@ public class AddNewChatActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
 
                     // Show Dialog with user information, so that user can add that "user" or cancel operation
-                    showUserFoundDialog(user);
+                    showUserFoundDialog(user, AddNewChatActivity.this);
                 }
             }
 
@@ -149,9 +191,9 @@ public class AddNewChatActivity extends AppCompatActivity {
     }
 
     // Method to take care of user found dialog box, Dialog box is used to show information about user
-    public void showUserFoundDialog(UserInformation userInformation){
+    public void showUserFoundDialog(UserInformation userInformation, Context context){
         // Create and setup dialog for AddNewChatActivity
-        Dialog userFoundDialog = new Dialog(AddNewChatActivity.this);
+        Dialog userFoundDialog = new Dialog(context);
 
         // Use our custom layout for dialog box and set window height, width parameters as wrap_content
         userFoundDialog.setContentView(R.layout.user_found_dialog);
@@ -170,7 +212,7 @@ public class AddNewChatActivity extends AppCompatActivity {
         // If getImage_url() returns other value than "default", it means user have an profile image already or using default image
         if (!userInformation.getImage_url().equals("default")){
             // Use Glide library to get and set image (using Uri, automatically) in personImage imageView
-            Glide.with(AddNewChatActivity.this).load(userInformation.getImage_url()).into(personImage);
+            Glide.with(context).load(userInformation.getImage_url()).into(personImage);
         }
 
         // click listener for "add" choice button
@@ -203,19 +245,19 @@ public class AddNewChatActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     // if task is successful then show "user found" toast
                                     if (task.isSuccessful()){
-                                        Toast.makeText(AddNewChatActivity.this, "User added", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, "User added", Toast.LENGTH_SHORT).show();
                                         progressBar.setVisibility(View.GONE);
                                         userFoundDialog.dismiss();
                                         finish();
                                     } else {
                                         progressBar.setVisibility(View.GONE);
-                                        Toast.makeText(AddNewChatActivity.this, "Failed to add", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, "Failed to add", Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });
                         } else {
                             progressBar.setVisibility(View.GONE);
-                            Toast.makeText(AddNewChatActivity.this, "Failed to add", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "Failed to add", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
