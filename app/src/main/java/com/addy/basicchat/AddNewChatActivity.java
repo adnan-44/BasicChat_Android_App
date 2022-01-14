@@ -6,7 +6,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -19,7 +18,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,7 +25,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,70 +71,84 @@ public class AddNewChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // only proceed if user is not searching itself
                 if (!fAuth.getCurrentUser().getEmail().equals(email.getText().toString())) {
-
-                    // check if the provided users exits in platform databases or not, in realtime database, all users are located at /all_user_info location
-                    progressBar.setVisibility(View.VISIBLE);    // show loading till data is fetched
-                    database.child("all_users_info").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            allUsers.clear();   // clear any previous data
-                            for( DataSnapshot snap : snapshot.getChildren()){
-                                // add each user from snapshot into the list
-                                allUsers.add(snap.getValue(UserInformation.class));
-                            }
-
-                            // now iterate over list and check if given email exists or not
-                            for(UserInformation user : allUsers){
-                                if (user.getEmail().equals(email.getText().toString())){
-                                    userFound = true;	// set this true to keep track
-                                    // First check current users known contact from root -> p2p_users -> uid
-                                    database.child("p2p_users/"+fAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            // Get all the users contact in a list
-                                            final ArrayList<String> knownUsers = new ArrayList<>();
-                                            boolean alreadyKnown = false;
-                                            for (DataSnapshot snap : snapshot.getChildren()){
-                                                knownUsers.add(snap.getValue(String.class));
-                                                // If user is found in known users list, then set alreadyKnown to true
-                                                if(snap.getKey().equals(user.getUid())){
-                                                    alreadyKnown = true;
-                                                    progressBar.setVisibility(View.GONE);
-                                                    Toast.makeText(AddNewChatActivity.this, "User already exists", Toast.LENGTH_LONG).show();
-                                                    break;
-                                                }
-                                            }
-
-                                            // If user is not known then proceed to userFound dialog stuff
-                                            if (!alreadyKnown) {
-                                                progressBar.setVisibility(View.GONE);
-                                                showUserFoundDialog(user);
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) { }
-                                    });
-                                    break;
-                                }
-                            }
-
-                            // remove the loading and show toast if user not found
-                            if(!userFound){
-                                progressBar.setVisibility(View.GONE);
-                                Toast.makeText(AddNewChatActivity.this, "User not found", Toast.LENGTH_LONG).show();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) { }
-                    });
+                    searchUsers();  // Call searchUsers() method to search users
                 }
             }
         });
     }
 
-    // Method to take care of user found dialog box
+    // Method to take care of searching users within realtime database
+    private void searchUsers(){
+        // check if the provided users exits in platform databases or not, in realtime database, all users are located at /all_user_info location
+        progressBar.setVisibility(View.VISIBLE);    // show loading till data is fetched
+        database.child("all_users_info").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                allUsers.clear();   // clear any previous data
+                for( DataSnapshot snap : snapshot.getChildren()){
+                    // add each user from snapshot into the list
+                    allUsers.add(snap.getValue(UserInformation.class));
+                }
+
+                // now iterate over users list and check if given email exists or not
+                for(UserInformation user : allUsers){
+                    if (user.getEmail().equals(email.getText().toString())){
+                        userFound = true;	// set this true to keep track
+                        // First check current users known contact from root -> p2p_users -> uid
+                        userAlreadyKnown(user);
+                        break;
+                    }
+                }
+
+                // remove the loading and show toast if user not found
+                if(!userFound){
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(AddNewChatActivity.this, "User not found", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+    }
+
+    // Method to check whether that user is already known or not
+    private void userAlreadyKnown(UserInformation user){
+        // If user is not in known list, then only userFoundDialog will be shown
+        database.child("p2p_users/"+fAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Get all the users contact in a list
+                final ArrayList<String> knownUsers = new ArrayList<>();
+                boolean alreadyKnown = false;   // To keep track whether the user is already in contact with current user
+                for (DataSnapshot snap : snapshot.getChildren()){
+                    knownUsers.add(snap.getValue(String.class));
+                    // If user is found in known users list, then set alreadyKnown to true
+                    if(snap.getKey().equals(user.getUid())){
+                        // User is found, set alreadyKnown to true so that userFound dialog will not show
+                        alreadyKnown = true;
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(AddNewChatActivity.this, "User already exists", Toast.LENGTH_LONG).show();
+                        // Stop here, don't check rest of the list
+                        break;
+                    }
+                }
+
+                // show userFoundDialog stuff if user is not in known user
+                if (!alreadyKnown) {
+                    progressBar.setVisibility(View.GONE);
+
+                    // Show Dialog with user information, so that user can add that "user" or cancel operation
+                    showUserFoundDialog(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+    }
+
+    // Method to take care of user found dialog box, Dialog box is used to show information about user
     public void showUserFoundDialog(UserInformation userInformation){
         // Create and setup dialog for AddNewChatActivity
         Dialog userFoundDialog = new Dialog(AddNewChatActivity.this);
