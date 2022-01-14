@@ -17,8 +17,8 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/image_card"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             app:cardCornerRadius="80dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="Full name"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/image_card"
             app:layout_constraintTop_toTopOf="parent" />
@@ -49,7 +49,7 @@
             android:id="@+id/person_bio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginStart="10dp"
             android:text="Bio"
             android:textColor="@color/purple_200"
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:text="Email"
             android:textSize="15sp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginStart="10dp"
             app:layout_constraintStart_toEndOf="@+id/image_card"
             app:layout_constraintTop_toBottomOf="@+id/person_bio" />
