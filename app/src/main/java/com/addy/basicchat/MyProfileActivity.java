@@ -120,7 +120,7 @@ public class MyProfileActivity extends AppCompatActivity {
                 // Use Glide library to get and set image (using Uri, automatically) in profileImage
                 if( !userInfo.getImage_url().equals("default")){
                     // If user's profile image is not "default"
-                    Glide.with(MyProfileActivity.this).load(userInfo.getImage_url()).into(profileImage);
+                    Glide.with(getApplicationContext()).load(userInfo.getImage_url()).into(profileImage);
                 }
             }
             @Override
