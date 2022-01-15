@@ -13,8 +13,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,7 +28,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -44,6 +48,7 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference database;
 
     // Other stuff
+    private UserInformation userInfo;
     private String userUid;
     private String uniqueId;    // To get chats from unique location
 
@@ -69,7 +74,7 @@ public class ChatActivity extends AppCompatActivity {
         // Set our custom toolbar as action bar
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setToolbarTitle();  // Method to set user "full name" as toolbar title
+        setUserInfo();  // Method to set user "full name" and "status" in Toolbar
         progressBar.setVisibility(View.VISIBLE);
 
         // calling showMessages method to get messages and show them to recyclerView
@@ -118,13 +123,34 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     // Method to set user "Full name" as title
-    private void setToolbarTitle(){
+    private void setUserInfo(){
         // get the user name from database using usersUid
-        database.child("all_users_info/"+userUid+ "/full_name").addListenerForSingleValueEvent(new ValueEventListener() {
+        database.child("all_users_info/"+userUid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Get the user data in userInfo model class and then update views accordingly
+                UserInformation userInfo = snapshot.getValue(UserInformation.class);
+
                 // get the full_name from snapshot and update the toolbar title
-                toolbar.setTitle(snapshot.getValue(String.class));
+                final TextView personFullName = toolbar.findViewById(R.id.person_full_name);
+                personFullName.setText(userInfo.getFull_name());
+
+                // get the image_url from userInfo model, set image using Glide if it's not "default"
+                final ImageView personImage = toolbar.findViewById(R.id.person_image);
+                if(!userInfo.getImage_url().equals("default")){
+                    Glide.with(getApplicationContext()).load(userInfo.getImage_url()).circleCrop()
+                            .into(personImage);
+                }
+
+                // Set user status, online or last seen, according to user's "status" field
+                final TextView personStatus = toolbar.findViewById(R.id.person_status);
+                if(!userInfo.getStatus().equals("online")){
+                    // If status is other than "online" then prepare a last seen string and set
+                    String lastSeen = "last seen at " + ChatAdapter.getFormattedTime(userInfo.getStatus());
+                    personStatus.setText(lastSeen);
+                } else {
+                    personStatus.setText(userInfo.getStatus());
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
@@ -207,6 +233,33 @@ public class ChatActivity extends AppCompatActivity {
         adapter = new ChatAdapter(getApplicationContext(), ChatActivity.this, allMessages, uniqueId);
         chatRecyclerView.setAdapter(adapter);
 
+    }
+
+    // Override onPause and onResume method to update userStatus
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Don't do anything is there is no firebase user signed in already
+        if (fAuth.getCurrentUser() != null){
+            // Create a Map object to update user status, get time and update in "status" field
+            final Map<String, Object> updateStatus = new HashMap<>();
+            updateStatus.put("status", String.valueOf(System.currentTimeMillis()));
+            database.child("all_users_info/" +fAuth.getCurrentUser().getUid()).updateChildren(updateStatus);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Don't do anything is there is no firebase user signed in already
+        if (fAuth.getCurrentUser() != null){
+            // Create a Map object to update user status to "online" whenever activity starts
+            final Map<String, Object> updateStatus = new HashMap<>();
+            updateStatus.put("status", "online");
+
+            // all_users_info -> Uid -> status in realtime database
+            database.child("all_users_info/" +fAuth.getCurrentUser().getUid()).updateChildren(updateStatus);
+        }
     }
 
 }

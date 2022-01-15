@@ -25,6 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -163,6 +165,33 @@ public class MainActivity extends AppCompatActivity {
             Intent refresh_intent = new Intent(this, MainActivity.class);
             startActivity(refresh_intent);
             finish();
+        }
+    }
+
+    // Override onPause and onResume method to update userStatus
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Don't do anything is there is no firebase user signed in already
+        if (fAuth.getCurrentUser() != null){
+            // Create a Map object to update user status, get time and update in "status" field
+            final Map<String, Object> updateStatus = new HashMap<>();
+            updateStatus.put("status", String.valueOf(System.currentTimeMillis()));
+            database.child("all_users_info/" +fAuth.getCurrentUser().getUid()).updateChildren(updateStatus);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Don't do anything is there is no firebase user signed in already
+        if (fAuth.getCurrentUser() != null){
+            // Create a Map object to update user status to "online" whenever activity starts
+            final Map<String, Object> updateStatus = new HashMap<>();
+            updateStatus.put("status", "online");
+
+            // all_users_info -> Uid -> status in realtime database
+            database.child("all_users_info/" +fAuth.getCurrentUser().getUid()).updateChildren(updateStatus);
         }
     }
 }
