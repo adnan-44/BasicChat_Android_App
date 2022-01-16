@@ -3,6 +3,7 @@ package com.addy.basicchat;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -60,10 +62,9 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
                 holder.username.setText(userInfo.getFull_name());
 
                 // call getAndSetLastMessage() method to set last message from chats(database)
-                // Pass the lastSentMessage reference (to set the text), also pass user full_name
-                getAndSetLastMessage(position, holder.lastSentMessage,
-                        userInfo.getFull_name(), holder.lastSendMessageTime,
-                        holder.lastSentMessageStatus);
+                // Pass the lastSentMessage & lastSeenMessageStatus reference (to set the text), also pass user full_name
+                getAndSetLastMessage(position, holder.lastSentMessage,  holder.lastSendMessageTime,
+                        holder.lastSentMessageStatus, holder.unreadMessageCount);
 
                 // Call getAndSetProfileImage() method to set User's profile image from firebase storage
                 getAndSetProfileImage(holder.profileImage, userInfo);
@@ -94,7 +95,7 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         // Views from single_user_item layout
-        TextView username, lastSentMessage, lastSendMessageTime;
+        TextView username, lastSentMessage, lastSendMessageTime, unreadMessageCount;
         CardView single_user_layout;
         ImageView lastSentMessageStatus, profileImage;
 
@@ -105,12 +106,13 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
             lastSendMessageTime = itemView.findViewById(R.id.last_sent_message_time);
             lastSentMessageStatus = itemView.findViewById(R.id.last_sent_message_status);
             profileImage = itemView.findViewById(R.id.person_image);
+            unreadMessageCount = itemView.findViewById(R.id.unread_message_count);
             single_user_layout = itemView.findViewById(R.id.single_user_layout);
         }
     }
 
     // Method to get the last message, and set message to last_message textview
-    private void getAndSetLastMessage(int position, TextView lastMessageView, String fullName, TextView lastMessageTimeView, ImageView lastSentMessageStatus){
+    private void getAndSetLastMessage(int position, TextView lastMessageView, TextView lastMessageTimeView, ImageView lastSentMessageStatus, TextView unreadMessageCount){
         database.child("p2p_chats/"+chatUsers.get(position).getValue(String.class)).limitToLast(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snap) {
@@ -128,10 +130,18 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
                         // Show last sent message time also
                         lastMessageTimeView.setText(ChatAdapter.getFormattedTime(lastSentMessage.getTime()));
 
-                        // set tick according to message status, if message is seen already, then show double tick else single
+                        // set tick according to message status, if message is seen already, then show double tick
                         if(lastSentMessage.getMessageSeen()){
                             lastSentMessageStatus.setImageResource(R.drawable.ic_double_tick);
+                        } else if (!lastSentMessage.getSenderUid().equals(fAuth.getCurrentUser().getUid())){
+                            // If message is not seen yet, and last message sender is "other" person, then show unread message count
+                            showUnreadMessageCount(position, unreadMessageCount, lastMessageView);
+                            lastSentMessageStatus.setVisibility(View.INVISIBLE);
+
+                            // Also set teal_700 color to lastSentMessageTime textView
+                            lastMessageTimeView.setTextColor(activity.getResources().getColor(R.color.teal_700));
                         } else {
+                            // Else simply show single tick image in message status imageView
                             lastSentMessageStatus.setImageResource(R.drawable.ic_single_tick);
                         }
                     }
@@ -152,5 +162,26 @@ public class ShowUsersAdapter extends RecyclerView.Adapter<ShowUsersAdapter.View
             Glide.with(context).load(userInfo.getImage_url()).circleCrop().into(profileImage);
         }
 
+    }
+
+    // Method to check how many unread message left, and show them accordingly
+    private void showUnreadMessageCount(int position, TextView unreadMessageCount, TextView lastMessageView){
+        // Create a query to get only those messages, whose messageSeen is "false" using equalTo() method
+        final Query query = database.child("p2p_chats/"+chatUsers.get(position).getValue(String.class)).orderByChild("messageSeen").equalTo(false);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                /* Get the number of children (no. of messages that are not seen yet)
+                   set that value in unreadMessageCount textView, and make that textView Visible */
+                unreadMessageCount.setText(String.valueOf(snapshot.getChildrenCount()));
+                unreadMessageCount.setVisibility(View.VISIBLE);
+
+                // Change the lastSentMessage textStyle to "bold", and check textColor, so that user can differentiate in unreadMessage Text
+                lastMessageView.setTypeface(null, Typeface.BOLD);
+                lastMessageView.setTextColor(activity.getResources().getColor(R.color.teal_700));
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
     }
 }
