@@ -4,11 +4,11 @@
 
     <item
         android:id="@+id/profile_menu"
-        android:title="My Profile"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_account" />
+        android:icon="@drawable/ic_account"
+        android:title="@string/my_profile"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/logout_menu"
-        android:title="Logout" />
+        android:title="@string/logout" />
 </menu>

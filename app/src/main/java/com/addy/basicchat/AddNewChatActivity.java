@@ -1,11 +1,5 @@
 package com.addy.basicchat;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,6 +7,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,7 +27,7 @@ public class AddNewChatActivity extends AppCompatActivity {
 
     // GUI stuff
     private EditText personFullName;
-    private Toolbar toolbar;
+    private MaterialToolbar toolbar;
     private RecyclerView allUsersRecycler;
     private ProgressBar progressBar;
 
@@ -65,7 +65,8 @@ public class AddNewChatActivity extends AppCompatActivity {
         // Search the users onTextChange in person_full_name editText
         personFullName.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -74,12 +75,13 @@ public class AddNewChatActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) { }
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
     // Method to search users by name in realtime database
-    private void searchUserByName(String name){
+    private void searchUserByName(String name) {
         progressBar.setVisibility(View.VISIBLE);
 
         // Prepare a Query to search using fullName field
@@ -90,11 +92,11 @@ public class AddNewChatActivity extends AppCompatActivity {
                 allUsers.clear(); // clear any previous data
 
                 // Get data from snapshot, user info is store in nested form all_users_info -> uid
-                for (DataSnapshot snap : snapshot.getChildren()){
+                for (DataSnapshot snap : snapshot.getChildren()) {
                     // only add users to the list if they have name equal to user's input
                     UserInformation userInfo = snap.getValue(UserInformation.class);
                     if (userInfo.getFull_name().toLowerCase().contains(name) && !name.equals("") &&
-                             !userInfo.getUid().equals(fAuth.getCurrentUser().getUid())){
+                            !userInfo.getUid().equals(fAuth.getCurrentUser().getUid())) {
                         allUsers.add(userInfo);
                     }
                 }
@@ -104,8 +106,10 @@ public class AddNewChatActivity extends AppCompatActivity {
                 allUsersRecycler.setAdapter(adapter);
                 progressBar.setVisibility(View.GONE);   // Dismiss progress bar
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
         });
     }
 }

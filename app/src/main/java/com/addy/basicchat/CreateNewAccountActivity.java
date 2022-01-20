@@ -1,19 +1,19 @@
 package com.addy.basicchat;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -27,8 +27,8 @@ public class CreateNewAccountActivity extends AppCompatActivity {
 
     // GUI stuff
     private EditText bio, fullName, email, password, confirmPassword;
-    private Button createAccount;
-    private Toolbar toolbar;
+    private MaterialButton createAccount;
+    private MaterialToolbar toolbar;
     private ProgressBar progressBar;
 
     // Firebase stuff
@@ -66,7 +66,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.VISIBLE);  // show loading screen
 
                 // Only proceed account creation if both password fields are same, else show toast
-                if(password.getText().toString().equals(confirmPassword.getText().toString())){
+                if (password.getText().toString().equals(confirmPassword.getText().toString())) {
                     // First create new firebase account using provided email password
                     fAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -78,15 +78,15 @@ public class CreateNewAccountActivity extends AppCompatActivity {
                                         Toast.makeText(CreateNewAccountActivity.this, "Account created", Toast.LENGTH_SHORT).show();
 
                                         // if account is successfully created then update provided fullName
-                                        if(accountCreated){
+                                        if (accountCreated) {
                                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                                    .setDisplayName(fullName.getText().toString()). build();
+                                                    .setDisplayName(fullName.getText().toString()).build();
                                             FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdates)
                                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                         @Override
                                                         public void onComplete(@NonNull Task<Void> task) {
                                                             // show toast on successful
-                                                            if(task.isSuccessful()){
+                                                            if (task.isSuccessful()) {
                                                                 Toast.makeText(CreateNewAccountActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
                                                             } else {
                                                                 Toast.makeText(CreateNewAccountActivity.this, "failed to update profile", Toast.LENGTH_SHORT).show();
@@ -124,7 +124,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
     }
 
     // Method to update Realtime database with newly created account info
-    private void addAccountInfo(String fullName, String email, String password, String uid){
+    private void addAccountInfo(String fullName, String email, String password, String uid) {
         // Create a Map to store info, and upload them to (root -> all_user_info)
         Map<String, String> info = new HashMap<>();
         info.put("uid", uid);
@@ -134,7 +134,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
         info.put("image_url", "default");   // Set image_url to default, to show an default profile image to users
 
         // If "bio" field is empty, means user didn't enter anything, then simply use default bio
-        if (bio.getText().toString().trim().isEmpty()){
+        if (bio.getText().toString().trim().isEmpty()) {
             info.put("bio", getString(R.string.default_bio));
         } else {
             // Else you the bio that user entered
@@ -144,7 +144,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
         databaseReference.child(uid).setValue(info).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     Toast.makeText(CreateNewAccountActivity.this, "Database updated", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(CreateNewAccountActivity.this, "Failed to update database", Toast.LENGTH_SHORT).show();

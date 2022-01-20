@@ -6,17 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".ChatActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/purple_500"
+        android:background="@color/foreground"
         android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:theme="@style/Theme.BasicChat.AppBarOverlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Chat" >
+        app:title="Chat">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -31,32 +31,32 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/person_full_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@id/person_image"
-                android:text="Full name"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="2dp"
+                android:text="@string/full_name"
+                android:textColor="@color/text"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"
-                android:layout_marginTop="2dp"
-                android:layout_marginStart="10dp"
                 app:layout_constraintStart_toEndOf="@+id/person_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/person_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="status"
+                android:text="@string/status"
                 app:layout_constraintStart_toEndOf="@+id/person_image"
                 app:layout_constraintTop_toBottomOf="@+id/person_full_name" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.MaterialToolbar>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_recycler_view"
@@ -80,18 +80,18 @@
         <EditText
             android:id="@+id/message_box_input"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="42dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:hint="Message" />
+            android:hint="@string/message" />
 
         <ImageView
             android:id="@+id/send_message"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/circle_shape"
-            android:padding="8dp"
+            android:padding="10dp"
             android:src="@drawable/ic_send" />
 
     </LinearLayout>

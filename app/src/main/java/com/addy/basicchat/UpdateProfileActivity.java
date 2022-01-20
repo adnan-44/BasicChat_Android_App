@@ -1,17 +1,17 @@
 package com.addy.basicchat;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,8 +26,8 @@ public class UpdateProfileActivity extends AppCompatActivity {
 
     // GUI stuff
     private EditText fullName, bio;
-    private Button updateProfile;
-    private Toolbar toolbar;
+    private MaterialButton updateProfile;
+    private MaterialToolbar toolbar;
 
     // Firebase stuff
     private FirebaseAuth fAuth;
@@ -76,7 +76,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 // If information is successfully updated, then show "Profile updated Successfully" toast
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     Toast.makeText(UpdateProfileActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(UpdateProfileActivity.this, "Failed to update profile", Toast.LENGTH_LONG).show();
@@ -100,8 +100,10 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 fullName.setText(userInfo.getFull_name());
                 bio.setText(userInfo.getBio());
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
         });
     }
 }

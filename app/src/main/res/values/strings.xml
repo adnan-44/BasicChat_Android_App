@@ -3,4 +3,36 @@
 
     <!-- Default bio string for new users -->
     <string name="default_bio">New to Basic Chat</string>
+    <string name="do_you_want_to_add">Do you want to add ?</string>
+    <string name="full_name">Full Name</string>
+    <string name="bio">Bio</string>
+    <string name="email">Email Address</string>
+    <string name="cancel">Cancel</string>
+    <string name="add">Add</string>
+    <string name="search">Search</string>
+    <string name="search_and_add_new_users_to_your_chat">Search and add new users to your chat</string>
+    <string name="enter_name">Enter name…</string>
+    <string name="status">status</string>
+    <string name="message">Message</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="create_new_account_using_email">Create new account using Email</string>
+    <string name="bio_optional">Bio (optional)</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="create_account">Create Account</string>
+    <string name="login">Login</string>
+    <string name="login_to_your_account_using_email">Login to your account using Email</string>
+    <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign up</string>
+    <string name="example_gmail_com">example@gmail.com</string>
+    <string name="edit">Edit</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="keep_your_profile_updated">Keep your profile updated</string>
+    <string name="update">Update</string>
+    <string name="empty">Empty</string>
+    <string name="time_stamp">time_stamp</string>
+    <string name="user">User</string>
+    <string name="last_message">last_message</string>
+    <string name="_1">1</string>
+    <string name="my_profile">My Profile</string>
+    <string name="logout">Logout</string>
 </resources>

@@ -1,20 +1,20 @@
 package com.addy.basicchat;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -22,9 +22,9 @@ public class LoginActivity extends AppCompatActivity {
 
     // GUI stuff
     private EditText email, password;
-    private TextView signup;
-    private Button login;
-    private Toolbar toolbar;
+    private MaterialTextView signup;
+    private MaterialButton login;
+    private MaterialToolbar toolbar;
     private ProgressBar progressBar;
 
     // Firebase stuff
@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(task.isSuccessful()){
+                                if (task.isSuccessful()) {
                                     // close current activity after user logged in successfully
                                     // open MainActivity on successful account login
                                     Toast.makeText(LoginActivity.this, "User Logged in successfully", Toast.LENGTH_SHORT).show();
@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-	// Create new user on signup button click
+        // Create new user on signup button click
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

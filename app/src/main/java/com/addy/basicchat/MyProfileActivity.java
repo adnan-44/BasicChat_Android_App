@@ -1,26 +1,25 @@
 package com.addy.basicchat;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,21 +35,19 @@ import java.util.Map;
 
 public class MyProfileActivity extends AppCompatActivity {
 
+    // Other stuff
+    private static final int IMAGE_REQUEST_CODE = 1;
     // GUI stuff
-    private TextView fullName, email, bio;
-    private Button edit;
-    private Toolbar toolbar;
+    private MaterialTextView fullName, email, bio;
+    private MaterialButton edit;
+    private MaterialToolbar toolbar;
     private ImageView profileImage, selectImage;
     private ProgressDialog progressDialog;
-
     // Firebase stuff
     private FirebaseAuth fAuth;
     private DatabaseReference database;
     private StorageReference storage;   // TO work with firebase storage
     private Uri profileImageUri;
-
-    // Other stuff
-    private static final int IMAGE_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,13 +115,15 @@ public class MyProfileActivity extends AppCompatActivity {
                 bio.setText(userInfo.getBio());
 
                 // Use Glide library to get and set image (using Uri, automatically) in profileImage
-                if( !userInfo.getImage_url().equals("default")){
+                if (!userInfo.getImage_url().equals("default")) {
                     // If user's profile image is not "default"
                     Glide.with(getApplicationContext()).load(userInfo.getImage_url()).into(profileImage);
                 }
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
         });
     }
 
@@ -132,7 +131,7 @@ public class MyProfileActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == IMAGE_REQUEST_CODE && data != null && data.getData() != null){
+        if (requestCode == IMAGE_REQUEST_CODE && data != null && data.getData() != null) {
             // If data is not null, then get Uri from data
             progressDialog.show();  // show the progress dialog
             profileImageUri = data.getData();
@@ -141,7 +140,7 @@ public class MyProfileActivity extends AppCompatActivity {
     }
 
     // Method to take care of uploading image file to firebase storage
-    private void uploadProfileImage(Uri imageUri){
+    private void uploadProfileImage(Uri imageUri) {
         // Save the profile image like, profile -> uid
         storage.child(fAuth.getCurrentUser().getUid()).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -175,7 +174,7 @@ public class MyProfileActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 // If task is successful, then set profile_image with latest image Uri
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     profileImage.setImageURI(profileImageUri);
                     Toast.makeText(MyProfileActivity.this, "Profile image updated", Toast.LENGTH_SHORT).show();
                 } else {
@@ -191,7 +190,7 @@ public class MyProfileActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         // Don't do anything is there is no firebase user signed in already
-        if (fAuth.getCurrentUser() != null){
+        if (fAuth.getCurrentUser() != null) {
             // Create a Map object to update user status, get time and update in "status" field
             final Map<String, Object> updateStatus = new HashMap<>();
             updateStatus.put("status", String.valueOf(System.currentTimeMillis()));
@@ -203,7 +202,7 @@ public class MyProfileActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // Don't do anything is there is no firebase user signed in already
-        if (fAuth.getCurrentUser() != null){
+        if (fAuth.getCurrentUser() != null) {
             // Create a Map object to update user status to "online" whenever activity starts
             final Map<String, Object> updateStatus = new HashMap<>();
             updateStatus.put("status", "online");

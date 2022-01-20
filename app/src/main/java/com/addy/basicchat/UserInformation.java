@@ -6,8 +6,12 @@ public class UserInformation {
     private String bio, full_name, email, password, uid, image_url, status;
 
     // Empty public constructor
-    public UserInformation(){
-    
+    public UserInformation() {
+
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     // Getter and setters
@@ -15,55 +19,51 @@ public class UserInformation {
         this.status = status;
     }
 
-    public String getStatus() {
-        return status;
+    public String getImage_url() {
+        return image_url;
     }
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;
     }
 
-    public String getImage_url() {
-        return image_url;
+    public String getBio() {
+        return bio;
     }
 
     public void setBio(String bio) {
         this.bio = bio;
     }
 
-    public String getBio() {
-        return bio;
-    }
-
-    public void setFull_name(String fullName){
-        this.full_name = fullName;
-    }
-
-    public String getFull_name(){
+    public String getFull_name() {
         return full_name;
     }
 
-    public void setEmail(String email){
-        this.email = email;
+    public void setFull_name(String fullName) {
+        this.full_name = fullName;
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return email;
     }
 
-    public void setPassword(String password){
-        this.password = password;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
 
-    public void setUid(String uid){
-        this.uid = uid;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getUid(){
+    public String getUid() {
         return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

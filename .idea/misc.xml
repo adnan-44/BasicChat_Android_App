@@ -3,6 +3,30 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2845" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/drawable/circle_shape.xml" value="0.3635" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/drawable/ic_account.xml" value="0.2845" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/drawable/ic_edit.xml" value="0.2845" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2845" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/drawable/ic_login.xml" value="0.1925" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/drawable/ic_person_search.xml" value="0.2845" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/drawable/ic_send.xml" value="0.3635" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/drawable/ic_single_tick.xml" value="0.194" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/drawable/ic_single_tick_left.xml" value="0.3635" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/activity_add_new_chat.xml" value="0.1" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/activity_chat.xml" value="0.2" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/activity_create_new_account.xml" value="0.18" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/activity_login.xml" value="0.22" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/activity_main.xml" value="0.18" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/activity_my_profile.xml" value="0.22" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/activity_update_profile.xml" value="0.2" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/left_message_view.xml" value="0.22" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/right_message_view.xml" value="0.5414507772020726" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/single_message_view.xml" value="0.7307692307692307" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/single_user_info_item.xml" value="0.18" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/single_user_item.xml" value="0.22" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/layout/user_found_dialog.xml" value="0.18" />
+        <entry key="..\:/Akos/BasicChat_Android_App/app/src/main/res/menu/main_menu.xml" value="0.3625" />
         <entry key="app/src/main/res/drawable/circle_shape.xml" value="0.21145833333333333" />
         <entry key="app/src/main/res/drawable/edit_text_shape.xml" value="0.21145833333333333" />
         <entry key="app/src/main/res/drawable/ic_account.xml" value="0.21145833333333333" />

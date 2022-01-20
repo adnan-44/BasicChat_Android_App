@@ -1,21 +1,22 @@
 package com.addy.basicchat;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -30,21 +31,19 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int ACTIVITY_REQUEST_CODE = 1;
     // GUI stuff
-    private Button login;
+    private MaterialButton login;
     private RecyclerView homeRecyclerView;
     private FloatingActionButton addNewChat;
-    private Toolbar toolbar;
+    private MaterialToolbar toolbar;
     private ProgressBar progressBar;
-
     // Firebase stuff
     private FirebaseAuth fAuth;
     private DatabaseReference database;
-
     // Other stuff
     private ShowUsersAdapter adapter;
     private ArrayList<DataSnapshot> chatUsers;   // to store chat users info
-    private static final int ACTIVITY_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance().getReference();
 
         // Only show "Start chat" button if an user is already signed in
-        if(fAuth.getCurrentUser() == null){
+        if (fAuth.getCurrentUser() == null) {
             login.setVisibility(View.VISIBLE);
             homeRecyclerView.setVisibility(View.GONE);
             addNewChat.setVisibility(View.GONE);
@@ -87,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if(fAuth.getCurrentUser() != null){
+        if (fAuth.getCurrentUser() != null) {
             // Set LinearLayout as layout manager for our recyclerView
             homeRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
 
@@ -106,9 +105,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.logout_menu:
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(MainActivity.this, MainActivity.class);
@@ -133,24 +133,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Method to get and set chat users info into chatUsers list
-    private void showUsers(){
+    private void showUsers() {
         // get the users info from (p2p_users->uid->)
         progressBar.setVisibility(View.VISIBLE);
-        database.child("p2p_users/"+fAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+        database.child("p2p_users/" + fAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // Clear any previous data from the chatUsers list
                 chatUsers.clear();
 
                 // Get all the children and insert one by one, first get chat usersUid
-                for(DataSnapshot snap : snapshot.getChildren()){
+                for (DataSnapshot snap : snapshot.getChildren()) {
                     chatUsers.add(snap);
                 }
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.GONE);
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
         });
         adapter = new ShowUsersAdapter(MainActivity.this, getApplicationContext(), chatUsers);
         homeRecyclerView.setAdapter(adapter);
@@ -160,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK){
+        if (requestCode == ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
             // Start same activity using intents then finish them. Better than recreate
             Intent refresh_intent = new Intent(this, MainActivity.class);
             startActivity(refresh_intent);
@@ -173,11 +176,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         // Don't do anything is there is no firebase user signed in already
-        if (fAuth.getCurrentUser() != null){
+        if (fAuth.getCurrentUser() != null) {
             // Create a Map object to update user status, get time and update in "status" field
             final Map<String, Object> updateStatus = new HashMap<>();
             updateStatus.put("status", String.valueOf(System.currentTimeMillis()));
-            database.child("all_users_info/" +fAuth.getCurrentUser().getUid()).updateChildren(updateStatus);
+            database.child("all_users_info/" + fAuth.getCurrentUser().getUid()).updateChildren(updateStatus);
         }
     }
 
@@ -185,13 +188,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // Don't do anything is there is no firebase user signed in already
-        if (fAuth.getCurrentUser() != null){
+        if (fAuth.getCurrentUser() != null) {
             // Create a Map object to update user status to "online" whenever activity starts
             final Map<String, Object> updateStatus = new HashMap<>();
             updateStatus.put("status", "online");
 
             // all_users_info -> Uid -> status in realtime database
-            database.child("all_users_info/" +fAuth.getCurrentUser().getUid()).updateChildren(updateStatus);
+            database.child("all_users_info/" + fAuth.getCurrentUser().getUid()).updateChildren(updateStatus);
         }
     }
 }
