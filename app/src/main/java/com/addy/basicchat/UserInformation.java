@@ -4,17 +4,26 @@ public class UserInformation {
 
     // Model class for all_user_info
     private String bio, full_name, email, password, uid, image_url, status;
+    private Boolean email_verified;
 
     // Empty public constructor
     public UserInformation() {
 
     }
 
+    // Getter and setters
+    public Boolean getEmail_verified() {
+        return email_verified;
+    }
+
+    public void setEmail_verified(Boolean email_verified) {
+        this.email_verified = email_verified;
+    }
+
     public String getStatus() {
         return status;
     }
 
-    // Getter and setters
     public void setStatus(String status) {
         this.status = status;
     }

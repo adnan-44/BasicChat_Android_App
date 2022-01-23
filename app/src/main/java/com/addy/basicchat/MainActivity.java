@@ -92,6 +92,13 @@ public class MainActivity extends AppCompatActivity {
 
             // call showUsers method to take care of recycler adapter stuff
             showUsers();
+
+            // open PendingAccount activity if user's email is not verified yet
+            if (!fAuth.getCurrentUser().isEmailVerified()){
+                Intent intent = new Intent(MainActivity.this, PendingAccountActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear previous activity from backstack
+                startActivity(intent);
+            }
         }
 
         // open AddNewChat Activity to add new chat

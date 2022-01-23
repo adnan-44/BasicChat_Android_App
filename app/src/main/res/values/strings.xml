@@ -35,4 +35,10 @@
     <string name="_1">1</string>
     <string name="my_profile">My Profile</string>
     <string name="logout">Logout</string>
+
+    <!-- Pending account -->
+    <string name="refresh">Refresh</string>
+    <string name="resend">Resend email</string>
+    <string name="verification_pending">Please verify email to continue to app</string>
+    <string name="email_sent">An verification email has been sent to your registered email.\nCheck your Inbox/Spam folder</string>
 </resources>

@@ -106,12 +106,18 @@ public class CreateNewAccountActivity extends AppCompatActivity {
                                         Toast.makeText(CreateNewAccountActivity.this, task.getException().toString(), Toast.LENGTH_LONG).show();
                                     }
 
-                                    // close current activity once account get created
-                                    Intent intent = new Intent(CreateNewAccountActivity.this, MainActivity.class);
-                                    setResult(RESULT_OK, getIntent());
-                                    startActivity(intent);
-                                    progressBar.setVisibility(View.GONE);   // Hide loading once operation is completed
-                                    finish();
+                                    // Send the email verification to the user's "email"
+                                    fAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            // close current activity once account get created
+                                            Intent intent = new Intent(CreateNewAccountActivity.this, PendingAccountActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear previous activity from backstack
+                                            startActivity(intent);
+                                            progressBar.setVisibility(View.GONE);   // Hide loading once operation is completed
+                                            finish();
+                                        }
+                                    });
                                 }
                             });
                 } else {
@@ -126,12 +132,13 @@ public class CreateNewAccountActivity extends AppCompatActivity {
     // Method to update Realtime database with newly created account info
     private void addAccountInfo(String fullName, String email, String password, String uid) {
         // Create a Map to store info, and upload them to (root -> all_user_info)
-        Map<String, String> info = new HashMap<>();
+        Map<String, Object> info = new HashMap<>();
         info.put("uid", uid);
         info.put("full_name", fullName);
         info.put("email", email);
         info.put("password", password);
         info.put("image_url", "default");   // Set image_url to default, to show an default profile image to users
+        info.put("email_verified", fAuth.getCurrentUser().isEmailVerified());   // It'll be false by default
 
         // If "bio" field is empty, means user didn't enter anything, then simply use default bio
         if (bio.getText().toString().trim().isEmpty()) {
