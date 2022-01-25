@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -117,11 +119,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout_menu:
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-                Toast.makeText(MainActivity.this, "User logged out", Toast.LENGTH_SHORT).show();
+                // Call signOutUser() method to sign-out current user and update their "status" in realtime database
+                signOutUser();
                 return true;
 
             case R.id.profile_menu:
@@ -137,6 +136,39 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
+    }
+
+    // Method to sign-out current user and change their "status" in realtime database
+    private void signOutUser(){
+        // Change user's status once user is logged out
+        if (fAuth.getCurrentUser() != null) {
+            // Create a Map object to update user status, get time and update in "status" field
+            final Map<String, Object> updateStatus = new HashMap<>();
+            updateStatus.put("status", String.valueOf(System.currentTimeMillis()));
+
+            // If we don't update their "status" right now, then it'll gonna show "online" to other users
+            // because while MainActivity is loaded (user's status is change to "online", from onStart())
+            database.child("all_users_info/" + fAuth.getCurrentUser().getUid()).updateChildren(updateStatus).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    // If task is successful, then sign-out then current user
+                    if (task.isSuccessful()){
+                        // Use firebase signOut() method to sign-out current user, and reload/open MainActivity again
+                        FirebaseAuth.getInstance().signOut();
+                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                        Toast.makeText(MainActivity.this, "User logged out", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // if task gets failed then show the error to the user
+                        Toast.makeText(MainActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } else {
+            // If no user is signed-in then show "no user signed-in" toast to the user
+            Toast.makeText(MainActivity.this, "No user signed-in", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // Method to get and set chat users info into chatUsers list
