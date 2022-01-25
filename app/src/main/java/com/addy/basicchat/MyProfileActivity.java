@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -184,6 +186,20 @@ public class MyProfileActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Create a menu option named "change password"
+        menu.add("Change password").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                // Open UpdatePassword activity on click of "change password" menu
+                Intent intent = new Intent(MyProfileActivity.this, UpdatePasswordActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
+        return true;
+    }
 
     // Override onPause and onResume method to update userStatus
     @Override

@@ -10,6 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BasicChat">
         <activity
+            android:name=".UpdatePasswordActivity"
+            android:exported="false"
+            android:parentActivityName=".MyProfileActivity" />
+        <activity
             android:name=".PendingAccountActivity"
             android:exported="false" />
         <activity

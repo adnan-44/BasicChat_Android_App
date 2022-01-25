@@ -41,4 +41,15 @@
     <string name="resend">Resend email</string>
     <string name="verification_pending">Please verify email to continue to app</string>
     <string name="email_sent">An verification email has been sent to your registered email.\nCheck your Inbox/Spam folder</string>
+
+    <!-- Forgot password -->
+    <string name="forgot_password_q">Forgot Password ?</string>
+    <string name="send_password_reset_email">Send password reset email</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="edit_password">Edit Password</string>
+    <string name="keep_your_password_secure">Keep your password secure</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="change_password">Change Password</string>
+    <string name="current_password">Current Password</string>
 </resources>
