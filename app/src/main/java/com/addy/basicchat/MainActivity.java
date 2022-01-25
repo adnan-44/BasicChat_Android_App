@@ -124,9 +124,15 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.profile_menu:
-                // Open MyProfileActivity on "My Profile" option select
-                Intent myProfile = new Intent(MainActivity.this, MyProfileActivity.class);
-                startActivity(myProfile);
+                // Only open MyProfileActivity if account is signed in
+                if (fAuth.getCurrentUser() != null){
+                    // Open MyProfileActivity on "My Profile" option select
+                    Intent myProfile = new Intent(MainActivity.this, MyProfileActivity.class);
+                    startActivity(myProfile);
+                } else {
+                    // else show "Login first" toast 
+                    Toast.makeText(MainActivity.this, "Login first :)", Toast.LENGTH_SHORT).show();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
